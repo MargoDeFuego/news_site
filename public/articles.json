@@ -1,0 +1,18 @@
+[
+    {
+        "date": "14.11.2025",
+        "name": "Кот",
+        "preview_image": null,
+        "full_image": null,
+        "shortDesc": "котик",
+        "desc": "коти кот котиа"
+    },
+    {
+        "date": "14.11.2025",
+        "name": "пёс",
+        "preview_image": null,
+        "full_image": null,
+        "shortDesc": "собака",
+        "desc": "собака собака собака"
+    }
+]
