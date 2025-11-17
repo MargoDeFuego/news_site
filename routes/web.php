@@ -21,7 +21,9 @@ Route::get('/contacts', function () {
 })->name('contacts');
 
 // Галерея
+Route::get('/gallery', [MainController::class, 'galleryAll'])->name('gallery.all');
 Route::get('/gallery/{id}', [MainController::class, 'gallery'])->name('gallery');
+Route::get('/gallery/item/{index}', [MainController::class, 'galleryItem'])->name('gallery.item');
 
 // Общая админка
 Route::get('/admin', function () {

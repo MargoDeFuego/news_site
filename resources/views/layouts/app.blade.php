@@ -18,6 +18,9 @@
                 <li>
                     <a href="{{ route('contacts') }}">Контакты</a>
                 </li>
+                <li>
+                    <a href="{{ route('gallery.all') }}">Галерея</a>
+                </li>
             </ol>
         </nav>
     </header>

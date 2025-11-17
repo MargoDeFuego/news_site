@@ -15,6 +15,39 @@ class MainController extends Controller
         return view('home', compact('articles'));
     }
 
+public function galleryAll()
+{
+    $jsonPath = public_path('gallery.json');
+
+    if (!File::exists($jsonPath)) {
+        File::put($jsonPath, json_encode([], JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+    }
+
+    $json = File::get($jsonPath);
+    $images = json_decode($json, true) ?? [];
+
+    return view('gallery-all', compact('images'));
+}
+
+public function galleryItem($index)
+{
+    $jsonPath = public_path('gallery.json');
+
+    if (!File::exists($jsonPath)) {
+        abort(404);
+    }
+
+    $json = File::get($jsonPath);
+    $images = json_decode($json, true) ?? [];
+
+    if (!isset($images[$index])) {
+        abort(404);
+    }
+
+    $image = $images[$index];
+
+    return view('gallery-item', compact('image', 'index'));
+}
     public function gallery($id)
     {
         $json = File::get(public_path('articles.json'));
