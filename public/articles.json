@@ -1,18 +1,10 @@
 [
     {
         "date": "14.11.2025",
-        "name": "Кот",
-        "preview_image": null,
-        "full_image": null,
-        "shortDesc": "котик",
-        "desc": "коти кот котиа"
-    },
-    {
-        "date": "14.11.2025",
-        "name": "пёс",
-        "preview_image": null,
-        "full_image": null,
-        "shortDesc": "собака",
-        "desc": "собака собака собака"
+        "name": "Тигры",
+        "preview_image": "images/tigers_prev.jpg" ,
+        "full_image": "images/tigers.jpg",
+        "shortDesc": "тигрица и тигрёнок",
+        "desc": "Нежность в дикой природе: тигрица несёт детёныша."
     }
 ]
