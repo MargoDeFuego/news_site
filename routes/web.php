@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\AuthController;
 
 // Главная страница через контроллер
 Route::get('/', [MainController::class, 'index'])->name('home');
@@ -34,3 +35,7 @@ Route::get('/admin/news', [MainController::class, 'admin'])->name('admin.news');
 Route::post('/admin/news', [MainController::class, 'store'])->name('admin.store');
 Route::get('/admin/gallery', [MainController::class, 'galleryAdmin'])->name('admin.gallery');
 Route::post('/admin/gallery', [MainController::class, 'galleryStore'])->name('admin.gallery.store');
+
+// Авторизация
+Route::get('/signin', [AuthController::class, 'create'])->name('auth.create');
+Route::post('/signin', [AuthController::class, 'registration'])->name('auth.registration');

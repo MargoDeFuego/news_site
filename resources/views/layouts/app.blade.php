@@ -21,6 +21,9 @@
                 <li>
                     <a href="{{ route('gallery.all') }}">Галерея</a>
                 </li>
+                <li>
+                    <a href="{{ route('auth.registration') }}">Авторизация</a>
+                </li>
             </ol>
         </nav>
     </header>
