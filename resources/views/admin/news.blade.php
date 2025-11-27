@@ -24,7 +24,7 @@
 <h2>Список новостей</h2>
 <ul>
 @foreach($articles as $article)
-    <li>{{ $article['date'] }} — {{ $article['name'] }}</li>
+    <li>{{ $article->date }} — {{ $article->title }}</li>
 @endforeach
 </ul>
 @endsection
