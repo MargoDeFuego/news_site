@@ -4,13 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 
-// Главная страница через контроллер
+// Главная страница
 Route::get('/', [MainController::class, 'index'])->name('home');
 
 // Статические страницы
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
+Route::get('/about', fn() => view('about'))->name('about');
 
 Route::get('/contacts', function () {
     $contacts = [
@@ -26,18 +24,29 @@ Route::get('/gallery', [MainController::class, 'galleryAll'])->name('gallery.all
 Route::get('/gallery/{id}', [MainController::class, 'gallery'])->name('gallery');
 Route::get('/gallery/item/{index}', [MainController::class, 'galleryItem'])->name('gallery.item');
 
-// Общая админка
-Route::get('/admin', function () {
-    return view('admin.index');
-})->name('admin.index');
+// Админка
+Route::get('/admin', fn() => view('admin.index'))->name('admin.index');
 
-// Админ галерея
 Route::get('/admin/gallery', [MainController::class, 'galleryAdmin'])->name('admin.gallery');
 Route::post('/admin/gallery', [MainController::class, 'galleryStore'])->name('admin.gallery.store');
 
-// Авторизация
-Route::get('/signin', [AuthController::class, 'create'])->name('auth.create');
-Route::post('/signin', [AuthController::class, 'registration'])->name('auth.registration');
+// ------------------------------
+// 🔥 Блок авторизации (исправлено полностью)
+// ------------------------------
+
+Route::get('/signin', [AuthController::class, 'create'])->name('auth.create');            // форма регистрации
+Route::post('/signin', [AuthController::class, 'register'])->name('auth.register');       // обработка регистрации
+
+Route::get('/login', [AuthController::class, 'loginForm'])->name('auth.loginForm');       // форма логина
+Route::post('/login', [AuthController::class, 'login'])->name('auth.login');              // обработка логина
+
+Route::post('/logout', [AuthController::class, 'logout'])                                 // выход
+     ->middleware('auth:sanctum')
+     ->name('auth.logout');
+
+Route::get('/dashboard', function () {                                                    // защищённая страница
+    return view('dashboard');
+})->middleware('auth:sanctum');
 
 // Новости
 Route::get('/news', [App\Http\Controllers\ArticleController::class, 'index'])->name('news');
@@ -46,11 +55,6 @@ Route::get('/news', [App\Http\Controllers\ArticleController::class, 'index'])->n
 Route::get('/admin/news', [App\Http\Controllers\AdminArticleController::class, 'index'])->name('admin.news');
 Route::post('/admin/news/store', [App\Http\Controllers\AdminArticleController::class, 'store'])->name('admin.store');
 
-// Форма редактирования
 Route::get('/admin/news/{id}/edit', [App\Http\Controllers\AdminArticleController::class, 'edit'])->name('admin.news.edit');
-
-// Обновление
 Route::put('/admin/news/{id}', [App\Http\Controllers\AdminArticleController::class, 'update'])->name('admin.news.update');
-
-// Удаление
 Route::delete('/admin/news/{id}', [App\Http\Controllers\AdminArticleController::class, 'destroy'])->name('admin.news.delete');

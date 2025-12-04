@@ -23,7 +23,7 @@
                     <a href="{{ route('gallery.all') }}">Галерея</a>
                 </li>
                 <li>
-                    <a href="{{ route('auth.registration') }}">Авторизация</a>
+                  <a href="{{ route('auth.loginForm') }}">Авторизация</a>
                 </li>
                 <li>
                     <a href="{{ route('news') }}">Новости</a>
