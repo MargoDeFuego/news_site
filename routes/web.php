@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\AdminArticleController;
+use App\Http\Controllers\CommentController;
 
 // Главная страница
 Route::get('/', [MainController::class, 'index'])->name('home');
@@ -54,11 +57,30 @@ Route::get('/dashboard', function () {
 // ------------------------------
 // Новости
 // ------------------------------
-Route::get('/news', [App\Http\Controllers\ArticleController::class, 'index'])->name('news');
+Route::get('/news', [ArticleController::class, 'index'])->name('news');
 
 // Админ новости
-Route::get('/admin/news', [App\Http\Controllers\AdminArticleController::class, 'index'])->name('admin.news');
-Route::post('/admin/news/store', [App\Http\Controllers\AdminArticleController::class, 'store'])->name('admin.store');
-Route::get('/admin/news/{id}/edit', [App\Http\Controllers\AdminArticleController::class, 'edit'])->name('admin.news.edit');
-Route::put('/admin/news/{id}', [App\Http\Controllers\AdminArticleController::class, 'update'])->name('admin.news.update');
-Route::delete('/admin/news/{id}', [App\Http\Controllers\AdminArticleController::class, 'destroy'])->name('admin.news.delete');
+Route::get('/admin/news', [AdminArticleController::class, 'index'])->name('admin.news');
+Route::post('/admin/news/store', [AdminArticleController::class, 'store'])->name('admin.store');
+Route::get('/admin/news/{id}/edit', [AdminArticleController::class, 'edit'])->name('admin.news.edit');
+Route::put('/admin/news/{id}', [AdminArticleController::class, 'update'])->name('admin.news.update');
+Route::delete('/admin/news/{id}', [AdminArticleController::class, 'destroy'])->name('admin.news.delete');
+
+// ------------------------------
+// Комментарии
+// ------------------------------
+Route::post('/comments', [CommentController::class, 'store'])
+    ->middleware('auth:sanctum')
+    ->name('comments.store');
+
+Route::delete('/comments/{id}', [CommentController::class, 'destroy'])
+    ->middleware('auth:sanctum')
+    ->name('comments.destroy');
+
+Route::put('/comments/{id}', [CommentController::class, 'update'])
+    ->middleware('auth:sanctum')
+    ->name('comments.update');
+
+// Комментарии одной статьи
+Route::get('/news/{article}', [App\Http\Controllers\ArticleController::class, 'show'])
+    ->name('news.show');

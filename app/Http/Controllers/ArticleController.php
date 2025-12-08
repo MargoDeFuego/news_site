@@ -60,4 +60,10 @@ class ArticleController extends Controller
 
         return redirect()->route('articles.index');
     }
+
+    public function show(\App\Models\Article $article)
+    {
+    return view('articles.show', compact('article'));
+    }
+
 }
