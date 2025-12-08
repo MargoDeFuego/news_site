@@ -2,6 +2,14 @@
 
 @section('content')
     <h2>{{ $article->title }}</h2>
+
+    {{-- Кнопка для модератора --}}
+    @can('update', $article)
+        <a href="{{ route('admin.news.edit', $article->id) }}" class="btn btn-warning mb-3">
+            Редактировать новость
+        </a>
+    @endcan
+
     <p>{{ $article->desc }}</p>
     <small>{{ $article->date }}</small>
 
@@ -14,7 +22,7 @@
             <strong>{{ $comment->user->name }}</strong>
             <p>{{ $comment->content }}</p>
 
-            {{-- Кнопки редактирования и удаления --}}
+            {{-- Редактирование комментариев --}}
             @can('update', $comment)
                 <form method="POST" action="{{ route('comments.update', $comment->id) }}">
                     @csrf
@@ -24,6 +32,7 @@
                 </form>
             @endcan
 
+            {{-- Удаление комментариев --}}
             @can('delete', $comment)
                 <form method="POST" action="{{ route('comments.destroy', $comment->id) }}">
                     @csrf
@@ -49,6 +58,6 @@
             </form>
         @endcan
     @else
-        <p>Чтобы оставить комментарий, <a href="{{ route('auth.loginForm') }}">войдите</a>.</p>
+        <p>Чтобы оставить комментарий, <a href="{{ route('login') }}">войдите</a>.</p>
     @endauth
 @endsection

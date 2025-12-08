@@ -8,17 +8,17 @@ use App\Models\User;
 class ArticlePolicy
 {
     /**
-     * Все пользователи могут просматривать список статей.
+     * Все могут смотреть список статей.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
         return true;
     }
 
     /**
-     * Все пользователи могут просматривать конкретную статью.
+     * Все могут смотреть конкретную статью.
      */
-    public function view(User $user, Article $article): bool
+    public function view(?User $user, Article $article): bool
     {
         return true;
     }

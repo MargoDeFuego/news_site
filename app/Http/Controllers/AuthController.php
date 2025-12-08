@@ -31,7 +31,7 @@ class AuthController extends Controller
         ]);
 
         // после регистрации → редирект на форму авторизации
-        return redirect()->route('auth.loginForm')
+        return redirect()->route('login')
                          ->with('success', 'Регистрация успешна! Теперь войдите.');
     }
 

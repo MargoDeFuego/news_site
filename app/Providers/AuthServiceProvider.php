@@ -11,24 +11,18 @@ use App\Policies\CommentPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * The policy mappings for the application.
-     */
     protected $policies = [
         Article::class => ArticlePolicy::class,
         Comment::class => CommentPolicy::class,
     ];
 
-    /**
-     * Register any authentication / authorization services.
-     */
     public function boot(): void
     {
         $this->registerPolicies();
 
-        // Глобальный шлюз: модератор может всё
+        // Модератор имеет полный доступ
         Gate::before(function ($user, $ability) {
-            return $user->role === 'moderator' ? true : null;
+            return $user->role?->name === 'moderator' ? true : null;
         });
     }
 }

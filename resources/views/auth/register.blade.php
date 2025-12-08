@@ -49,7 +49,7 @@
     </form>
 
     <p class="mt-3 text-center">
-        Уже есть аккаунт? <a href="{{ route('auth.loginForm') }}">Войти</a>
+        Уже есть аккаунт? <a href="{{ route('login') }}">Войти</a>
     </p>
 </div>
 @endsection

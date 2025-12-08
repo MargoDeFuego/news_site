@@ -33,7 +33,7 @@
 @else
     <div class="mt-4">
         <p>
-            <a href="{{ route('auth.loginForm') }}" class="btn btn-success">Войти</a>
+            <a href="{{ route('login') }}" class="btn btn-success">Войти</a>
             или <a href="{{ route('auth.create') }}" class="btn btn-outline-secondary">Зарегистрироваться</a>
         </p>
     </div>

@@ -25,7 +25,7 @@
                         <button type="submit">Выйти</button>
                     </form>
                 @else
-                    <a href="{{ route('auth.loginForm') }}">Авторизация</a>
+                    <a href="{{ route('login') }}">Авторизация</a>
                 @endauth
             </li>
 

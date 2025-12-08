@@ -8,30 +8,32 @@ use App\Models\Comment;
 class CommentPolicy
 {
     /**
-     * Разрешаем создание комментариев
+     * Разрешаем создание комментариев:
+     * - reader может создавать
+     * - moderator может создавать
      */
     public function create(User $user): bool
     {
-        // Читатель и модератор могут оставлять комментарии
-        return $user->role === 'reader' || $user->role === 'moderator';
+        return in_array($user->role->name, ['reader', 'moderator']);
     }
 
     /**
-     * Разрешаем удаление комментариев только модератору
+     * Разрешаем удаление комментариев:
+     * - moderator может удалять любые
      */
     public function delete(User $user, Comment $comment): bool
     {
-        return $user->role === 'moderator';
+        return $user->role->name === 'moderator';
     }
 
     /**
      * Разрешаем редактирование комментариев:
-     * - модератор может редактировать любые
-     * - читатель только свои
+     * - moderator редактирует любые
+     * - reader редактирует только свои
      */
     public function update(User $user, Comment $comment): bool
     {
-        return $user->role === 'moderator'
-            || ($user->role === 'reader' && $user->id === $comment->user_id);
+        return $user->role->name === 'moderator'
+            || ($user->role->name === 'reader' && $user->id === $comment->user_id);
     }
 }
