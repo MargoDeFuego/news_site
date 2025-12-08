@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 
@@ -11,7 +12,7 @@ Route::get('/', [MainController::class, 'index'])->name('home');
 Route::get('/about', fn() => view('about'))->name('about');
 Route::get('/contacts', function () {
     $contacts = [
-        'Телефон: +79175203699',
+        'Телефон: +79997777999',
         'Email: m25rita@ya.ru',
         'Адрес: Подольск, Россия'
     ];
