@@ -13,7 +13,7 @@ class CommentPolicy
     public function create(User $user): bool
     {
         // Читатель и модератор могут оставлять комментарии
-        return in_array($user->role->name, ['reader', 'moderator']);
+        return $user->role === 'reader' || $user->role === 'moderator';
     }
 
     /**
@@ -21,7 +21,7 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment): bool
     {
-        return $user->role->name === 'moderator';
+        return $user->role === 'moderator';
     }
 
     /**
@@ -31,7 +31,7 @@ class CommentPolicy
      */
     public function update(User $user, Comment $comment): bool
     {
-        return $user->role->name === 'moderator'
-            || ($user->role->name === 'reader' && $user->id === $comment->user_id);
+        return $user->role === 'moderator'
+            || ($user->role === 'reader' && $user->id === $comment->user_id);
     }
 }

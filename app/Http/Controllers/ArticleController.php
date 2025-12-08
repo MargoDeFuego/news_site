@@ -66,4 +66,5 @@ class ArticleController extends Controller
     return view('articles.show', compact('article'));
     }
 
+    
 }

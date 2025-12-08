@@ -16,7 +16,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Article::class => ArticlePolicy::class,
-        Comment::class => CommentPolicy::class, // добавили политику для комментариев
+        Comment::class => CommentPolicy::class,
     ];
 
     /**
@@ -28,9 +28,7 @@ class AuthServiceProvider extends ServiceProvider
 
         // Глобальный шлюз: модератор может всё
         Gate::before(function ($user, $ability) {
-            if ($user->isModerator()) {
-                return true;
-            }
+            return $user->role === 'moderator' ? true : null;
         });
     }
 }

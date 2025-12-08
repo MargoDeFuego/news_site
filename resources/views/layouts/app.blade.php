@@ -32,7 +32,8 @@
             {{-- Создать новость — только модератор --}}
             <li>
                 @can('create', App\Models\Article::class)
-                    <a href="{{ route('articles.create') }}">Создать новость</a>
+                    <a href="{{ route('admin.news') }}">Создать новость</a>
+
                 @endcan
             </li>
         </ol>
