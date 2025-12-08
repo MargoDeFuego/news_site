@@ -44,4 +44,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+        // связь с Role
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    // удобные проверки
+    public function isModerator(): bool
+    {
+        return $this->role && $this->role->name === 'moderator';
+    }
+
+    public function isReader(): bool
+    {
+        return $this->role && $this->role->name === 'reader';
+    }
 }

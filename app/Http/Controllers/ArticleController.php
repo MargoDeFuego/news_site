@@ -2,14 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Article;
+use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
     public function index()
-{
-    $articles = Article::orderBy('created_at', 'desc')->paginate(5);
-    return view('articles.index', compact('articles'));
-}
+    {
+        // Просмотр списка статей доступен всем
+        $articles = Article::all();
+        return view('articles.index', compact('articles'));
+    }
+
+    public function create()
+    {
+        // Проверка политики: только модератор
+        $this->authorize('create', Article::class);
+
+        return view('articles.create');
+    }
+
+    public function store(Request $request)
+    {
+        $this->authorize('create', Article::class);
+
+        Article::create($request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]));
+
+        return redirect()->route('articles.index');
+    }
+
+    public function edit(Article $article)
+    {
+        $this->authorize('update', $article);
+
+        return view('articles.edit', compact('article'));
+    }
+
+    public function update(Request $request, Article $article)
+    {
+        $this->authorize('update', $article);
+
+        $article->update($request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]));
+
+        return redirect()->route('articles.index');
+    }
+
+    public function destroy(Article $article)
+    {
+        $this->authorize('delete', $article);
+
+        $article->delete();
+
+        return redirect()->route('articles.index');
+    }
 }

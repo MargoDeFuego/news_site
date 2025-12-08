@@ -8,29 +8,37 @@
 </head>
 <body>
     <header>
-        <nav>
-            <ol>
-                <li>
-                    <a href="{{ route('home') }}">Главная</a>
-                </li>
-                <li>
-                    <a href="{{ route('about') }}">О нас</a>
-                </li>
-                <li>
-                    <a href="{{ route('contacts') }}">Контакты</a>
-                </li>
-                <li>
-                    <a href="{{ route('gallery.all') }}">Галерея</a>
-                </li>
-                <li>
-                  <a href="{{ route('auth.loginForm') }}">Авторизация</a>
-                </li>
-                <li>
-                    <a href="{{ route('news') }}">Новости</a>
-                </li>
-            </ol>   
-        </nav>
+    <nav>
+        <ol>
+            <li><a href="{{ route('home') }}">Главная</a></li>
+            <li><a href="{{ route('about') }}">О нас</a></li>
+            <li><a href="{{ route('contacts') }}">Контакты</a></li>
+            <li><a href="{{ route('gallery.all') }}">Галерея</a></li>
+            <li><a href="{{ route('news') }}">Новости</a></li>
+
+            {{-- Авторизация / Личный кабинет --}}
+            <li>
+                @auth
+                    <a href="{{ route('dashboard') }}">Личный кабинет</a>
+                    <form method="POST" action="{{ route('auth.logout') }}">
+                        @csrf
+                        <button type="submit">Выйти</button>
+                    </form>
+                @else
+                    <a href="{{ route('auth.loginForm') }}">Авторизация</a>
+                @endauth
+            </li>
+
+            {{-- Создать новость — только модератор --}}
+            <li>
+                @can('create', App\Models\Article::class)
+                    <a href="{{ route('articles.create') }}">Создать новость</a>
+                @endcan
+            </li>
+        </ol>
+    </nav>
     </header>
+
     <main>
         @yield('content')  
     </main>

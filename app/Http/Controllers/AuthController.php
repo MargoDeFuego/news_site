@@ -12,7 +12,7 @@ class AuthController extends Controller
     // Форма регистрации
     public function create()
     {
-        return view('auth.signin');
+        return view('auth.register'); // Blade-шаблон формы регистрации
     }
 
     // Обработка регистрации
@@ -21,7 +21,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name'     => 'required|string|min:2|max:50',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:6'
+            'password' => 'required|confirmed|min:6'
         ]);
 
         User::create([
@@ -30,6 +30,7 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        // после регистрации → редирект на форму авторизации
         return redirect()->route('auth.loginForm')
                          ->with('success', 'Регистрация успешна! Теперь войдите.');
     }
@@ -37,7 +38,7 @@ class AuthController extends Controller
     // Форма логина
     public function loginForm()
     {
-        return view('auth.login');
+        return view('auth.login'); // Blade-шаблон формы логина
     }
 
     // Авторизация
@@ -54,9 +55,10 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        // Создаём токен sanctum
+        // Создаём Sanctum токен
         $token = $request->user()->createToken('auth_token')->plainTextToken;
 
+        // редирект на главную страницу
         return redirect('/')
                 ->with('token', $token)
                 ->with('success', 'Вы успешно вошли!');
@@ -65,12 +67,12 @@ class AuthController extends Controller
     // Выход
     public function logout(Request $request)
     {
+        // удаляем все токены Sanctum
         $request->user()->tokens()->delete();
-
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // редирект на главную страницу
         return redirect('/')
                 ->with('success', 'Вы вышли из аккаунта');
     }
