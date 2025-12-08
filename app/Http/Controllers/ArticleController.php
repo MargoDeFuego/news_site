@@ -9,8 +9,7 @@ class ArticleController extends Controller
 {
     public function index()
     {
-        // Просмотр списка статей доступен всем
-        $articles = Article::all();
+        $articles = \App\Models\Article::paginate(10); // пагинатор
         return view('articles.index', compact('articles'));
     }
 
