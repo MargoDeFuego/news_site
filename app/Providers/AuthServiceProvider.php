@@ -21,8 +21,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // Модератор имеет полный доступ
-        Gate::before(function ($user, $ability) {
+       Gate::before(function ($user, $ability) {
             return $user->role?->name === 'moderator' ? true : null;
         });
+
     }
 }

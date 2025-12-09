@@ -5,27 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // ← добавлено!
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable; // ← добавлено HasApiTokens
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var list<string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role_id', // ← ОБЯЗАТЕЛЬНО! иначе role_id не записывается
     ];
 
     /**
      * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -34,8 +31,6 @@ class User extends Authenticatable
 
     /**
      * Casts.
-     *
-     * @return array<string, string>
      */
     protected function casts(): array
     {
@@ -45,20 +40,22 @@ class User extends Authenticatable
         ];
     }
 
-        // связь с Role
+    //-------------------------------------
+    //        РОЛИ
+    //-------------------------------------
+
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
-    // удобные проверки
     public function isModerator(): bool
     {
-        return $this->role && $this->role->name === 'moderator';
+        return $this->role?->name === 'moderator';
     }
 
     public function isReader(): bool
     {
-        return $this->role && $this->role->name === 'reader';
+        return $this->role?->name === 'reader';
     }
 }
