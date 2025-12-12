@@ -21,10 +21,12 @@ class CommentPolicy
      * Разрешаем удаление комментариев:
      * - moderator может удалять любые
      */
-    public function delete(User $user, Comment $comment): bool
-    {
-        return $user->role->name === 'moderator';
-    }
+   public function delete(User $user, Comment $comment): bool
+{
+    return $user->role->name === 'moderator'
+        || ($user->role->name === 'reader' && $user->id === $comment->user_id);
+}
+
 
     /**
      * Разрешаем редактирование комментариев:
