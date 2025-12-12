@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Article;
+use App\Models\Comment;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -37,6 +39,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Создаём статьи
-        \App\Models\Article::factory(10)->create();
+        $articles = Article::factory(10)->create();
+
+        // Создаём комментарии для каждой статьи
+        $articles->each(function ($article) {
+            Comment::factory(rand(2, 6))->create([
+                'article_id' => $article->id,
+                'user_id'    => User::inRandomOrder()->first()->id,
+            ]);
+        });
     }
 }

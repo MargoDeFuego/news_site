@@ -84,3 +84,5 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/comments', [CommentController::class, 'store'])->middleware('auth')->name('comments.store');
 Route::put('/comments/{comment}', [CommentController::class, 'update'])->middleware('auth')->name('comments.update');
 Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->middleware('auth')->name('comments.destroy');
+//фабрика комм
+Route::resource('articles.comments', CommentController::class);
