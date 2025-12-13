@@ -13,6 +13,7 @@ class Comment extends Model
         'user_id',
         'article_id',
         'content',
+        'is_approved',
     ];
 
     // Связь с пользователем
@@ -26,4 +27,14 @@ class Comment extends Model
     {
         return $this->belongsTo(Article::class);
     }
+    public function scopeApproved($query)
+{
+    return $query->where('is_approved', true);
+}
+
+public function scopePending($query)
+{
+    return $query->where('is_approved', false);
+}
+
 }

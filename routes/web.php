@@ -1,19 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CommentModerationController;
 
 // ------------------------------
 // ПУБЛИЧНЫЕ СТРАНИЦЫ
 // ------------------------------
 
 Route::get('/', [MainController::class, 'index'])->name('home');
+
 Route::get('/about', fn() => view('about'))->name('about');
+
 Route::get('/contacts', fn() => view('contacts', [
     'contacts' => [
         'Телефон: +79997777999',
@@ -29,12 +33,12 @@ Route::get('/gallery/item/{index}', [MainController::class, 'galleryItem'])->nam
 // ------------------------------
 // АВТОРИЗАЦИЯ
 // ------------------------------
+
 Route::get('/register', [AuthController::class, 'create'])->name('auth.create');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
 
-// ВАЖНО: чиним имя маршрута login
+// ВАЖНО: корректное имя маршрута login
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
-
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 
 Route::post('/logout', [AuthController::class, 'logout'])
@@ -55,14 +59,20 @@ Route::get('/news/{article}', [ArticleController::class, 'show'])->name('news.sh
 // ------------------------------
 // АДМИНКА — только авторизованные
 // ------------------------------
+
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin', fn() => view('admin.index'))->name('admin.index');
 
+    // ------------------------------
+    // Галерея (админ)
+    // ------------------------------
     Route::get('/admin/gallery', [MainController::class, 'galleryAdmin'])->name('admin.gallery');
     Route::post('/admin/gallery', [MainController::class, 'galleryStore'])->name('admin.gallery.store');
 
+    // ------------------------------
     // Управление статьями — только модератор
+    // ------------------------------
     Route::middleware('can:create,App\Models\Article')->group(function () {
         Route::get('/admin/news', [AdminArticleController::class, 'index'])->name('admin.news');
         Route::post('/admin/news/store', [AdminArticleController::class, 'store'])->name('admin.store');
@@ -71,18 +81,42 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/admin/news/{id}', [AdminArticleController::class, 'destroy'])->name('admin.news.delete');
     });
 
+    // ------------------------------
     // Управление пользователями — только модератор
+    // ------------------------------
     Route::middleware('can:manage-users')->group(function () {
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('admin.users.updateRole');
     });
+
+    // ------------------------------
+    // 🔥 МОДЕРАЦИЯ КОММЕНТАРИЕВ — ТОЛЬКО МОДЕРАТОР
+    // ------------------------------
+    Route::middleware('can:isModerator')->group(function () {
+
+        Route::get('/admin/comments', [CommentModerationController::class, 'index'])
+            ->name('admin.comments');
+
+        Route::post('/admin/comments/{comment}/approve', [CommentModerationController::class, 'approve'])
+            ->name('admin.comments.approve');
+
+        Route::delete('/admin/comments/{comment}', [CommentModerationController::class, 'reject'])
+            ->name('admin.comments.reject');
+    });
 });
 
 // ------------------------------
-// Комментарии
+// КОММЕНТАРИИ (пользователи)
 // ------------------------------
-Route::post('/comments', [CommentController::class, 'store'])->middleware('auth')->name('comments.store');
-Route::put('/comments/{comment}', [CommentController::class, 'update'])->middleware('auth')->name('comments.update');
-Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->middleware('auth')->name('comments.destroy');
-//фабрика комм
-Route::resource('articles.comments', CommentController::class);
+
+Route::post('/comments', [CommentController::class, 'store'])
+    ->middleware('auth')
+    ->name('comments.store');
+
+Route::put('/comments/{comment}', [CommentController::class, 'update'])
+    ->middleware('auth')
+    ->name('comments.update');
+
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('comments.destroy');

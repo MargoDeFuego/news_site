@@ -36,6 +36,15 @@
 
                 @endcan
             </li>
+            @auth
+    @if(auth()->user()->isModerator())
+        <li>
+            <a href="{{ route('admin.comments') }}">
+                Модерация комментариев
+            </a>
+        </li>
+    @endif
+@endauth
         </ol>
     </nav>
     </header>

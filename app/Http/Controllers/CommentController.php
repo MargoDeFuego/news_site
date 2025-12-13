@@ -23,10 +23,11 @@ class CommentController extends Controller
         Comment::create([
             'user_id'    => auth()->id(),
             'article_id' => $request->article_id,
-            'content'    => $request->content,
+            'content'     => $request->content,
+            'is_approved' => false,
         ]);
 
-        return back()->with('success', 'Комментарий добавлен!');
+        return back()->with('success', 'Комментарий отправлен и ожидает модерации!');
     }
 
     /**
