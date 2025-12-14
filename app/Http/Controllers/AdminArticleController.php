@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Jobs\VeryLongJob;
-
+use App\Events\NewArticlePublished;
 
 class AdminArticleController extends Controller
 {
@@ -15,33 +15,34 @@ class AdminArticleController extends Controller
         return view('admin.news.index', compact('articles'));
     }
 
-public function store(Request $request)
-{
-    $request->validate([
-        'title'      => 'required|min:3|max:255',
-        'shortDesc'  => 'nullable|max:255',
-        'desc'       => 'nullable|min:10',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title'     => 'required|min:3|max:255',
+            'shortDesc' => 'nullable|max:255',
+            'desc'      => 'nullable|min:10',
+        ]);
 
-    // Создаём статью
-    $article = Article::create([
-        'title'         => $request->title,
-        'shortDesc'     => $request->shortDesc,
-        'desc'          => $request->desc,
-        'date'          => now()->format('Y-m-d'),
-        'preview_image' => '',
-        'full_image'    => '',
-    ]);
+        // 1️⃣ Создаём статью
+        $article = Article::create([
+            'title'         => $request->title,
+            'shortDesc'     => $request->shortDesc,
+            'desc'          => $request->desc,
+            'date'          => now()->format('Y-m-d'),
+            'preview_image' => '',
+            'full_image'    => '',
+        ]);
 
-    // Отправляем задание в очередь
-    VeryLongJob::dispatch($article);
+        // 2️⃣ Очередь: отправка email модераторам
+        VeryLongJob::dispatch($article);
 
-    return redirect()
-        ->route('admin.news')
-        ->with('success', 'Новость добавлена. Уведомления отправляются в фоне.');
-}
+        // 3️⃣ Онлайн-уведомление всем пользователям на сайте
+        event(new NewArticlePublished($article));
 
-
+        return redirect()
+            ->route('admin.news')
+            ->with('success', 'Новость добавлена. Уведомления отправляются в фоне.');
+    }
 
     public function edit($id)
     {
@@ -52,9 +53,9 @@ public function store(Request $request)
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title'      => 'required|min:3|max:255',
-            'shortDesc'  => 'nullable|max:255',
-            'desc'       => 'nullable|min:10',
+            'title'     => 'required|min:3|max:255',
+            'shortDesc' => 'nullable|max:255',
+            'desc'      => 'nullable|min:10',
         ]);
 
         Article::findOrFail($id)->update([
