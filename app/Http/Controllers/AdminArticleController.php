@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\NewArticleMail;
-use App\Models\User;
+use App\Jobs\VeryLongJob;
+
 
 class AdminArticleController extends Controller
 {
@@ -26,28 +25,22 @@ public function store(Request $request)
 
     // Создаём статью
     $article = Article::create([
-        'title'        => $request->title,
-        'shortDesc'    => $request->shortDesc,
-        'desc'         => $request->desc,
-        'date'         => now()->format('Y-m-d'),
-        'preview_image'=> '',
-        'full_image'   => '',
+        'title'         => $request->title,
+        'shortDesc'     => $request->shortDesc,
+        'desc'          => $request->desc,
+        'date'          => now()->format('Y-m-d'),
+        'preview_image' => '',
+        'full_image'    => '',
     ]);
 
-    // Находим всех модераторов
-    $moderators = User::whereHas('role', fn($q) => 
-        $q->where('name', 'moderator')
-    )->get();
-
-    // Отправляем письма
-    foreach ($moderators as $moderator) {
-        Mail::to($moderator->email)->send(new NewArticleMail($article));
-    }
+    // Отправляем задание в очередь
+    VeryLongJob::dispatch($article);
 
     return redirect()
         ->route('admin.news')
-        ->with('success', 'Новость добавлена и уведомление отправлено!');
+        ->with('success', 'Новость добавлена. Уведомления отправляются в фоне.');
 }
+
 
 
     public function edit($id)
