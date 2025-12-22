@@ -77,7 +77,12 @@ Route::get('/dashboard', fn () => view('dashboard'))
 */
 
 Route::get('/news', [ArticleController::class, 'index'])->name('news');
-Route::get('/news/{article}', [ArticleController::class, 'show'])->name('news.show');
+
+
+Route::get('/news/{article}', [ArticleController::class, 'show'])
+    ->middleware(\App\Http\Middleware\TrackArticleViews::class)
+    ->name('news.show');
+
 
 /*
 |--------------------------------------------------------------------------
