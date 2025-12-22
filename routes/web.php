@@ -9,35 +9,56 @@ use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CommentModerationController;
+use App\Http\Controllers\NotificationController;
 
-// ------------------------------
-// ПУБЛИЧНЫЕ СТРАНИЦЫ
-// ------------------------------
+/*
+|--------------------------------------------------------------------------
+| УВЕДОМЛЕНИЯ (ВАЖНО: порядок!)
+|--------------------------------------------------------------------------
+*/
+
+
+Route::middleware('auth')->get('/notifications/render', function () {
+    return view('partials.notifications');
+});
+
+
+Route::middleware('auth')
+    ->get('/notifications/{notification}', [NotificationController::class, 'read'])
+    ->whereUuid('notification')
+    ->name('notifications.read');
+
+/*
+|--------------------------------------------------------------------------
+| ПУБЛИЧНЫЕ СТРАНИЦЫ
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', [MainController::class, 'index'])->name('home');
 
-Route::get('/about', fn() => view('about'))->name('about');
+Route::get('/about', fn () => view('about'))->name('about');
 
-Route::get('/contacts', fn() => view('contacts', [
+Route::get('/contacts', fn () => view('contacts', [
     'contacts' => [
         'Телефон: +79997777999',
         'Email: m25rita@ya.ru',
-        'Адрес: Подольск, Россия'
-    ]
+        'Адрес: Подольск, Россия',
+    ],
 ]))->name('contacts');
 
 Route::get('/gallery', [MainController::class, 'galleryAll'])->name('gallery.all');
 Route::get('/gallery/{id}', [MainController::class, 'gallery'])->name('gallery');
 Route::get('/gallery/item/{index}', [MainController::class, 'galleryItem'])->name('gallery.item');
 
-// ------------------------------
-// АВТОРИЗАЦИЯ
-// ------------------------------
+/*
+|--------------------------------------------------------------------------
+| АВТОРИЗАЦИЯ
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/register', [AuthController::class, 'create'])->name('auth.create');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
 
-// ВАЖНО: корректное имя маршрута login
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 
@@ -45,34 +66,34 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('auth.logout');
 
-Route::get('/dashboard', fn() => view('dashboard'))
+Route::get('/dashboard', fn () => view('dashboard'))
     ->middleware('auth')
     ->name('dashboard');
 
-// ------------------------------
-// НОВОСТИ (гости тоже видят)
-// ------------------------------
+/*
+|--------------------------------------------------------------------------
+| НОВОСТИ (доступны гостям)
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/news', [ArticleController::class, 'index'])->name('news');
 Route::get('/news/{article}', [ArticleController::class, 'show'])->name('news.show');
 
-// ------------------------------
-// АДМИНКА — только авторизованные
-// ------------------------------
+/*
+|--------------------------------------------------------------------------
+| АДМИНКА (только авторизованные)
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/admin', fn() => view('admin.index'))->name('admin.index');
+    Route::get('/admin', fn () => view('admin.index'))->name('admin.index');
 
-    // ------------------------------
-    // Галерея (админ)
-    // ------------------------------
+    // --- Галерея ---
     Route::get('/admin/gallery', [MainController::class, 'galleryAdmin'])->name('admin.gallery');
     Route::post('/admin/gallery', [MainController::class, 'galleryStore'])->name('admin.gallery.store');
 
-    // ------------------------------
-    // Управление статьями — только модератор
-    // ------------------------------
+    // --- Новости (модератор) ---
     Route::middleware('can:create,App\Models\Article')->group(function () {
         Route::get('/admin/news', [AdminArticleController::class, 'index'])->name('admin.news');
         Route::post('/admin/news/store', [AdminArticleController::class, 'store'])->name('admin.store');
@@ -81,19 +102,14 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/admin/news/{id}', [AdminArticleController::class, 'destroy'])->name('admin.news.delete');
     });
 
-    // ------------------------------
-    // Управление пользователями — только модератор
-    // ------------------------------
+    // --- Пользователи (модератор) ---
     Route::middleware('can:manage-users')->group(function () {
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('admin.users.updateRole');
     });
 
-    // ------------------------------
-    // 🔥 МОДЕРАЦИЯ КОММЕНТАРИЕВ — ТОЛЬКО МОДЕРАТОР
-    // ------------------------------
+    // --- Модерация комментариев ---
     Route::middleware('can:isModerator')->group(function () {
-
         Route::get('/admin/comments', [CommentModerationController::class, 'index'])
             ->name('admin.comments');
 
@@ -105,9 +121,11 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-// ------------------------------
-// КОММЕНТАРИИ (пользователи)
-// ------------------------------
+/*
+|--------------------------------------------------------------------------
+| КОММЕНТАРИИ (авторизованные пользователи)
+|--------------------------------------------------------------------------
+*/
 
 Route::post('/comments', [CommentController::class, 'store'])
     ->middleware('auth')

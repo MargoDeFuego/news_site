@@ -6,6 +6,11 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Jobs\VeryLongJob;
 use App\Events\NewArticlePublished;
+use App\Models\User;
+use App\Notifications\NewArticleNotification;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\DB;
 
 class AdminArticleController extends Controller
 {
@@ -23,7 +28,7 @@ class AdminArticleController extends Controller
             'desc'      => 'nullable|min:10',
         ]);
 
-        // 1️⃣ Создаём статью
+        // Создаём статью
         $article = Article::create([
             'title'         => $request->title,
             'shortDesc'     => $request->shortDesc,
@@ -33,15 +38,36 @@ class AdminArticleController extends Controller
             'full_image'    => '',
         ]);
 
-        // 2️⃣ Очередь: отправка email модераторам
+        //  Очередь: отправка email модераторам
         VeryLongJob::dispatch($article);
 
-        // 3️⃣ Онлайн-уведомление всем пользователям на сайте
+        // Онлайн-уведомление (WebSocket)
         event(new NewArticlePublished($article));
+
+        // ==============================
+        // ШАГ 7 — DATABASE уведомления
+        // ==============================
+
+        // Пользователи с активной сессией (авторизованы сейчас)
+        $activeUserIds = DB::table('sessions')
+            ->whereNotNull('user_id')
+            ->pluck('user_id')
+            ->unique()
+            ->all();
+
+       // Читатели (кроме текущего пользователя)
+$readers = User::whereHas('role', function ($q) {
+        $q->where('name', 'reader');
+    })
+    ->where('id', '!=', Auth::id()) // исключаем модератора
+    ->get();
+
+Notification::send($readers, new NewArticleNotification($article));
+
 
         return redirect()
             ->route('admin.news')
-            ->with('success', 'Новость добавлена. Уведомления отправляются в фоне.');
+            ->with('success', 'Новость добавлена. Уведомления отправлены.');
     }
 
     public function edit($id)
